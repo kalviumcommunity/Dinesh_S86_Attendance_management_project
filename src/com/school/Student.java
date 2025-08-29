@@ -11,6 +11,15 @@ public class Student {
         this.name = studentName;
     }
 
+    // ✅ Getters
+    public int getStudentId() {
+        return studentId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     public void displayDetails() {
         System.out.println("Student ID: S" + this.studentId + ", Name: " + this.name);
     }
