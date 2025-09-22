@@ -1,40 +1,31 @@
-package com.school;
+import java.util.HashSet;
+import java.util.Set;
 
 public class AttendanceRecord {
-    private int studentId;
-    private int courseId;
-    private String status;
+    private Set<Integer> presentIds = new HashSet<>();
 
-    // Constructor with validation
-    public AttendanceRecord(int studentId, int courseId, String status) {
-        this.studentId = studentId;
-        this.courseId = courseId;
+    public void markPresent(int personId) {
+        presentIds.add(personId);
+        System.out.println("Marked present: ID " + personId);
+    }
 
-        if (status.equalsIgnoreCase("Present") || status.equalsIgnoreCase("Absent")) {
-            this.status = status;
-        } else {
-            this.status = "Invalid";
-            System.out.println("⚠ Warning: Invalid status entered. Allowed values: Present/Absent.");
+    public void markAbsent(int personId) {
+        presentIds.remove(personId);
+        System.out.println("Marked absent: ID " + personId);
+    }
+
+    public boolean isPresent(int personId) {
+        return presentIds.contains(personId);
+    }
+
+    public void printRecords() {
+        System.out.println("Attendance Records:");
+        if (presentIds.isEmpty()) {
+            System.out.println("  (no records)");
+            return;
         }
-    }
-
-    // ✅ Getters
-    public int getStudentId() {
-        return studentId;
-    }
-
-    public int getCourseId() {
-        return courseId;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    // Display method
-    public void displayRecord() {
-        System.out.println("Student ID: S" + studentId +
-                           ", Course ID: C" + courseId +
-                           ", Status: " + status);
+        for (Integer id : presentIds) {
+            System.out.println("  Present ID: " + id);
+        }
     }
 }
