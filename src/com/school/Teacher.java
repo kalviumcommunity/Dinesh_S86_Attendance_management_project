@@ -1,15 +1,16 @@
-public class Teacher extends Person {
-    private String subjectTaught;
+package com.school;
 
-    public Teacher(String name, String subjectTaught) {
-        super(name);
-        this.subjectTaught = subjectTaught;
+public class Teacher extends Person {
+    private String subject;
+
+    public Teacher(String name, String subject) {
+        super(name); // matches Person(String name)
+        this.subject = subject;
     }
 
     @Override
     public void displayDetails() {
         super.displayDetails();
-        System.out.println("Role: Teacher");
-        System.out.println("Subject: " + subjectTaught);
+        System.out.println("Subject: " + subject);
     }
 }

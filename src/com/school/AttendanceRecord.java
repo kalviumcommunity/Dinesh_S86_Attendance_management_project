@@ -1,31 +1,22 @@
-import java.util.HashSet;
-import java.util.Set;
+package com.school;
 
-public class AttendanceRecord {
-    private Set<Integer> presentIds = new HashSet<>();
+public class AttendanceRecord implements Storable {
+    private int studentId;
+    private int courseId;
+    private String status;
 
-    public void markPresent(int personId) {
-        presentIds.add(personId);
-        System.out.println("Marked present: ID " + personId);
+    public AttendanceRecord(int studentId, int courseId, String status) {
+        this.studentId = studentId;
+        this.courseId = courseId;
+        this.status = status;
     }
 
-    public void markAbsent(int personId) {
-        presentIds.remove(personId);
-        System.out.println("Marked absent: ID " + personId);
-    }
+    public int getStudentId() { return studentId; }
+    public int getCourseId() { return courseId; }
+    public String getStatus() { return status; }
 
-    public boolean isPresent(int personId) {
-        return presentIds.contains(personId);
-    }
-
-    public void printRecords() {
-        System.out.println("Attendance Records:");
-        if (presentIds.isEmpty()) {
-            System.out.println("  (no records)");
-            return;
-        }
-        for (Integer id : presentIds) {
-            System.out.println("  Present ID: " + id);
-        }
+    @Override
+    public String toDataString() {
+        return studentId + "," + courseId + "," + status;
     }
 }
