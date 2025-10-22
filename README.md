@@ -77,3 +77,18 @@ java -cp src com.school.Main
 2. Compile: `javac src/com/school/*.java`
 3. Run: `java -cp src com.school.Main`
 4. Check the generated files: `students.txt`, `courses.txt`, `attendance_log.txt`.
+
+
+#### Part 7: Polymorphic Behaviour in Attendance and Displaying Reports
+
+- Modified `AttendanceRecord` to hold `Student` and `Course` objects instead of just their IDs, improving object orientation and enabling richer displays.
+- `toDataString()` of `AttendanceRecord` still returns `studentId,courseId,date,status` for simple file persistence.
+- Added `displaySchoolDirectory(List<Person> people)` in `Main.java` to demonstrate polymorphism.
+  - The method iterates a `List<Person>` that contains `Student`, `Teacher`, and `Staff` objects and calls `person.displayDetails()` on each.
+  - Each subclass overrides `displayDetails()` producing the correct runtime display.
+- When saving students, `Main` filters `schoolPeople` with `instanceof Student`, casts to `Student`, and calls `FileStorageService.saveStudents(...)`.
+- How to compile & run:
+  1. `javac src/com/school/*.java`
+  2. `java -cp src com.school.Main`
+- Files produced: `students.txt` and `attendance.txt` will be created in the working directory.
+
