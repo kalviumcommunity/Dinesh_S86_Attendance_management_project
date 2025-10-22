@@ -1,6 +1,8 @@
 package com.school;
 
-import java.io.*;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.IOException;
 import java.util.List;
 
 public class FileStorageService {
@@ -10,9 +12,9 @@ public class FileStorageService {
             for (Storable item : items) {
                 writer.println(item.toDataString());
             }
-            System.out.println("Data saved to " + filename);
+            System.out.println("✅ Data saved to " + filename);
         } catch (IOException e) {
-            System.out.println("Error saving data to " + filename);
+            System.out.println("❌ Error saving data to file: " + filename);
             e.printStackTrace();
         }
     }
