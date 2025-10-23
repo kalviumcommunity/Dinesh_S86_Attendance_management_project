@@ -1,29 +1,19 @@
 package com.school;
 
-public class Course implements Storable {
-    private static int nextCourseIdCounter = 101;
-    private int courseId;
-    private String courseName;
+public class Course {
+    private int id;
+    private String title;
 
-    public Course(String cName) {
-        this.courseId = nextCourseIdCounter++;
-        this.courseName = cName;
+    public Course(int id, String title) {
+        this.id = id;
+        this.title = title;
     }
 
-    public int getCourseId() {
-        return courseId;
-    }
-
-    public String getCourseName() {
-        return courseName;
-    }
-
-    public void displayDetails() {
-        System.out.println("Course ID: C" + this.courseId + ", Name: " + this.courseName);
-    }
+    public int getId() { return id; }
+    public String getTitle() { return title; }
 
     @Override
-    public String toDataString() {
-        return courseId + "," + courseName;
+    public String toString() {
+        return "Course{id=" + id + ", title='" + title + "'}";
     }
 }

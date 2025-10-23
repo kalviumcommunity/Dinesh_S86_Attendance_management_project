@@ -1,43 +1,34 @@
 package com.school;
 
-public class AttendanceRecord implements Storable {
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+public class AttendanceRecord {
     private Student student;
     private Course course;
     private String status;
+    private LocalDateTime timestamp;
 
     public AttendanceRecord(Student student, Course course, String status) {
         this.student = student;
         this.course = course;
-
-        if (status.equalsIgnoreCase("Present") || status.equalsIgnoreCase("Absent")) {
-            this.status = status;
-        } else {
-            this.status = "Invalid";
-            System.out.println("⚠ Warning: Invalid status entered. Allowed values: Present/Absent.");
-        }
+        this.status = status;
+        this.timestamp = LocalDateTime.now();
     }
 
-    public Student getStudent() {
-        return student;
-    }
+    public Student getStudent() { return student; }
+    public Course getCourse() { return course; }
+    public String getStatus() { return status; }
+    public LocalDateTime getTimestamp() { return timestamp; }
 
-    public Course getCourse() {
-        return course;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void displayRecord() {
-        System.out.println("Student: " + student.getName() + " (ID: " + student.getId() + ")");
-        System.out.println("Course : " + course.getCourseName() + " (C" + course.getCourseId() + ")");
-        System.out.println("Status : " + status);
-        System.out.println("---------------------------------");
+    public String toLogLine() {
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return student.getId() + "," + student.getName() + "," + course.getId() + "," + course.getTitle() + "," + status + "," + timestamp.format(fmt);
     }
 
     @Override
-    public String toDataString() {
-        return student.getId() + "," + course.getCourseId() + "," + status;
+    public String toString() {
+        return "[" + timestamp + "] " + student.getName() + " (id=" + student.getId() + ") - "
+                + course.getTitle() + " (id=" + course.getId() + ") => " + status;
     }
 }

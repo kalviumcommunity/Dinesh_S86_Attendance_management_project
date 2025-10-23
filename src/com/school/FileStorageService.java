@@ -1,21 +1,26 @@
 package com.school;
 
+import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.io.IOException;
 import java.util.List;
 
 public class FileStorageService {
+    private String filename;
 
-    public void saveData(List<? extends Storable> items, String filename) {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(filename))) {
-            for (Storable item : items) {
-                writer.println(item.toDataString());
+    public FileStorageService(String filename) {
+        this.filename = filename;
+    }
+
+    public void saveData(List<AttendanceRecord> attendanceLog) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename, false))) {
+            for (AttendanceRecord r : attendanceLog) {
+                bw.write(r.toLogLine());
+                bw.newLine();
             }
-            System.out.println("✅ Data saved to " + filename);
+            System.out.println("✅ Saved " + attendanceLog.size() + " attendance records to " + filename);
         } catch (IOException e) {
-            System.out.println("❌ Error saving data to file: " + filename);
-            e.printStackTrace();
+            System.err.println("❌ Error saving attendance data: " + e.getMessage());
         }
     }
 }
