@@ -1,24 +1,18 @@
 package com.school;
 
-public class Person {
-    private static int nextIdCounter = 1;
+public abstract class Person {
     protected int id;
     protected String name;
 
-    public Person(String name) {
-        this.id = nextIdCounter++;
+    public Person(int id, String name) {
+        this.id = id;
         this.name = name;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void displayDetails() {
-        System.out.println("ID: " + id + ", Name: " + name);
+    public int getId() { return id; }
+    public String getName() { return name; }
+    @Override
+    public String toString() {
+        return String.format("%d: %s", id, name);
     }
 }

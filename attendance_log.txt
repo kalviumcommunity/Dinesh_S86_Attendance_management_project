@@ -1,3 +1,7 @@
 1,Alice,101,Mathematics,Present,2025-10-23 11:18:09
 2,Bob,102,Physics,Absent,2025-10-23 11:18:09
 3,Charlie,101,Mathematics,Late,2025-10-23 11:18:09
+2025-11-17T11:23:43.710130400,studentId=1,studentName=Alice Kumar,courseId=1001,courseTitle=Algebra I,status=present
+2025-11-17T11:23:43.716580400,studentId=2,studentName=Rahul Reddy,courseId=1001,courseTitle=Algebra I,status=absent
+2025-11-17T11:23:44.234391600,studentId=1,studentName=Alice Kumar,courseId=1001,courseTitle=Algebra I,status=present
+2025-11-17T11:23:44.237912400,studentId=2,studentName=Rahul Reddy,courseId=1001,courseTitle=Algebra I,status=absent

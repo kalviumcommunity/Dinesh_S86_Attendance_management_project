@@ -1,83 +1,65 @@
 package com.school;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
+/**
+ * AttendanceService: responsibility limited to attendance management.
+ * It uses RegistrationService for lookups by id.
+ */
 public class AttendanceService {
-    private List<AttendanceRecord> attendanceLog;
-    private FileStorageService storageService;
 
-    public AttendanceService(FileStorageService storageService) {
-        this.storageService = storageService;
-        this.attendanceLog = new ArrayList<>();
+    private final List<String> attendanceRecords = new ArrayList<>();
+    private final FileStorageService fileStorage;
+    private final RegistrationService registrationService;
+
+    public AttendanceService(FileStorageService fileStorage, RegistrationService registrationService) {
+        this.fileStorage = fileStorage;
+        this.registrationService = registrationService;
     }
 
-    // Overloaded Method 1
-    public void markAttendance(Student student, Course course, String status) {
-        AttendanceRecord record = new AttendanceRecord(student, course, status);
-        attendanceLog.add(record);
-        System.out.println("✅ Marked: " + record);
-    }
+    /**
+     * Mark attendance by IDs: looks up student and course using registrationService.
+     * status could be "present", "absent", etc.
+     */
+    public boolean markAttendance(int studentId, int courseId, String status) {
+        Student student = registrationService.findStudentById(studentId);
+        Course course = registrationService.findCourseById(courseId);
 
-    // Overloaded Method 2
-    public void markAttendance(int studentId, int courseId, String status, List<Student> allStudents, List<Course> allCourses) {
-        Student s = findStudentById(studentId, allStudents);
-        Course c = findCourseById(courseId, allCourses);
-
-        if (s == null) {
-            System.err.println("❌ Student with id " + studentId + " not found.");
-            return;
+        if (student == null) {
+            System.err.println("Attendance error: Student id " + studentId + " not found.");
+            return false;
         }
-        if (c == null) {
-            System.err.println("❌ Course with id " + courseId + " not found.");
-            return;
+        if (course == null) {
+            System.err.println("Attendance error: Course id " + courseId + " not found.");
+            return false;
         }
 
-        markAttendance(s, c, status);
+        String timestamp = LocalDateTime.now().toString();
+        String record = String.format("%s,studentId=%d,studentName=%s,courseId=%d,courseTitle=%s,status=%s",
+                timestamp, studentId, student.getName(), courseId, course.getTitle(), status);
+        attendanceRecords.add(record);
+        System.out.println("Marked attendance: " + record);
+        return true;
     }
 
-    private Student findStudentById(int id, List<Student> allStudents) {
-        if (allStudents == null) return null;
-        Optional<Student> opt = allStudents.stream().filter(st -> st.getId() == id).findFirst();
-        return opt.orElse(null);
-    }
-
-    private Course findCourseById(int id, List<Course> allCourses) {
-        if (allCourses == null) return null;
-        Optional<Course> opt = allCourses.stream().filter(c -> c.getId() == id).findFirst();
-        return opt.orElse(null);
-    }
-
-    public void displayAttendanceLog() {
-        System.out.println("\\n=== 📘 Full Attendance Log ===");
-        if (attendanceLog.isEmpty()) {
-            System.out.println("(no records)");
-            return;
-        }
-        attendanceLog.forEach(System.out::println);
-    }
-
-    public void displayAttendanceLog(Student student) {
-        System.out.println("\\n=== 📗 Attendance for Student: " + student.getName() + " ===");
-        List<AttendanceRecord> filtered = attendanceLog.stream()
-                .filter(r -> r.getStudent().getId() == student.getId())
-                .collect(Collectors.toList());
-        if (filtered.isEmpty()) System.out.println("(no records)");
-        filtered.forEach(System.out::println);
-    }
-
-    public void displayAttendanceLog(Course course) {
-        System.out.println("\\n=== 📙 Attendance for Course: " + course.getTitle() + " ===");
-        List<AttendanceRecord> filtered = attendanceLog.stream()
-                .filter(r -> r.getCourse().getId() == course.getId())
-                .collect(Collectors.toList());
-        if (filtered.isEmpty()) System.out.println("(no records)");
-        filtered.forEach(System.out::println);
-    }
-
+    /**
+     * Save attendance records to a file (append)
+     */
     public void saveAttendanceData() {
-        storageService.saveData(this.attendanceLog);
+        try {
+            fileStorage.ensureFile("attendance_log.txt");
+            for (String line : attendanceRecords) {
+                fileStorage.appendLine("attendance_log.txt", line);
+            }
+            // clear in-memory after save (optional)
+            attendanceRecords.clear();
+            System.out.println("Attendance data saved.");
+        } catch (IOException e) {
+            System.err.println("Failed to save attendance: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
