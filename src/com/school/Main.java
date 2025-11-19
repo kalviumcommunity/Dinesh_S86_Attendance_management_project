@@ -5,46 +5,42 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        // instantiate helpers/services
+
         FileStorageService fileStorage = new FileStorageService();
-        RegistrationService registrationService = new RegistrationService(fileStorage);
-        AttendanceService attendanceService = new AttendanceService(fileStorage, registrationService);
+        RegistrationService registration = new RegistrationService(fileStorage);
+        AttendanceService attendance = new AttendanceService(fileStorage, registration);
 
-        // Register some students, teachers, staff and create courses via registrationService
-        Student s1 = new Student(1, "Alice Kumar", 15, "10th");
-        Student s2 = new Student(2, "Rahul Reddy", 16, "11th");
-        registrationService.registerStudent(s1);
-        registrationService.registerStudent(s2);
+        // --- Students ---
+        Student s1 = new Student(1, "Alice", 15, "10th");
+        Student s2 = new Student(2, "Rahul", 16, "11th");
+        Student s3 = new Student(3, "Priya", 15, "10th");
+        registration.registerStudent(s1);
+        registration.registerStudent(s2);
+        registration.registerStudent(s3);
 
+        // --- Teacher ---
         Teacher t1 = new Teacher(101, "Ms. Rao", "Mathematics");
-        registrationService.registerTeacher(t1);
+        registration.registerTeacher(t1);
 
-        Staff st1 = new Staff(201, "Mr. Sharma", "Clerk");
-        registrationService.registerStaff(st1);
+        // --- Course with capacity ---
+        registration.createCourse(2001, "Algebra I", t1.getId(), 2);
 
-        Course c1 = new Course(1001, "Algebra I", t1.getId());
-        registrationService.createCourse(c1);
+        Course course = registration.findCourseById(2001);
 
-        // display directory (uses registrationService)
-        System.out.println("---- School Directory ----");
-        displaySchoolDirectory(registrationService);
+        // --- Enrollment ---
+        registration.enrollStudentInCourse(s1, course);
+        registration.enrollStudentInCourse(s2, course);
 
-        // mark attendance using IDs (attendanceService uses registrationService internally)
-        attendanceService.markAttendance(1, 1001, "present");
-        attendanceService.markAttendance(2, 1001, "absent");
-        attendanceService.markAttendance(999, 1001, "present"); // demonstrates not found handling
+        // Attempt exceeding capacity
+        registration.enrollStudentInCourse(s3, course);
 
-        // save all data
-        registrationService.saveAllRegistrations();
-        attendanceService.saveAttendanceData();
+        // Display course details
+        System.out.println("\n=== COURSE DETAILS ===");
+        course.displayDetails();
 
-        System.out.println("Done. Check students.txt, teachers.txt, staff.txt, courses.txt and attendance_log.txt");
-    }
+        // Save data
+        registration.saveAllRegistrations();
 
-    private static void displaySchoolDirectory(RegistrationService regService) {
-        List<Person> people = regService.getAllPeople();
-        for (Person p : people) {
-            System.out.println(p.toString());
-        }
+        System.out.println("Done! Check courses.txt");
     }
 }

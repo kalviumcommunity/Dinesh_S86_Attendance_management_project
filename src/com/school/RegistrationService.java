@@ -6,12 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * RegistrationService - responsible for managing lists of entities:
- * Student, Teacher, Staff, Course.
- *
- * Depends on FileStorageService for persistence.
- */
 public class RegistrationService {
 
     private final List<Student> students = new ArrayList<>();
@@ -24,45 +18,34 @@ public class RegistrationService {
         this.fileStorage = fileStorage;
     }
 
-    // Registration methods
-    public void registerStudent(Student s) {
-        students.add(s);
-    }
+    // --- Registration ---
+    public void registerStudent(Student s) { students.add(s); }
+    public void registerTeacher(Teacher t) { teachers.add(t); }
+    public void registerStaff(Staff s) { staffMembers.add(s); }
 
-    public void registerTeacher(Teacher t) {
-        teachers.add(t);
-    }
-
-    public void registerStaff(Staff s) {
-        staffMembers.add(s);
-    }
-
-    public void createCourse(Course c) {
+    public void createCourse(int id, String title, int teacherId, int capacity) {
+        Course c = new Course(id, title, teacherId, capacity);
         courses.add(c);
     }
 
-    // getters
-    public List<Student> getStudents() { return new ArrayList<>(students); }
-    public List<Teacher> getTeachers() { return new ArrayList<>(teachers); }
-    public List<Staff> getStaffMembers() { return new ArrayList<>(staffMembers); }
-    public List<Course> getCourses() { return new ArrayList<>(courses); }
+    public boolean enrollStudentInCourse(Student student, Course course) {
+        boolean success = course.addStudent(student);
+        if (success) {
+            System.out.println("✔ Enrolled " + student.getName() + " into " + course.getTitle());
+        } else {
+            System.out.println("❌ Could NOT enroll " + student.getName() + " into " + course.getTitle()
+                    + " — Course is full!");
+        }
+        return success;
+    }
 
-    // finders
+    // --- Finders ---
     public Student findStudentById(int id) {
-        Optional<Student> s = students.stream().filter(st -> st.getId() == id).findFirst();
-        return s.orElse(null);
+        return students.stream().filter(st -> st.getId() == id).findFirst().orElse(null);
     }
 
     public Course findCourseById(int id) {
-        Optional<Course> c = courses.stream().filter(co -> co.getId() == id).findFirst();
-        return c.orElse(null);
-    }
-
-    public Person findPersonById(int id) {
-        for (Student s : students) if (s.getId() == id) return s;
-        for (Teacher t : teachers) if (t.getId() == id) return t;
-        for (Staff s : staffMembers) if (s.getId() == id) return s;
-        return null;
+        return courses.stream().filter(co -> co.getId() == id).findFirst().orElse(null);
     }
 
     public List<Person> getAllPeople() {
@@ -73,42 +56,30 @@ public class RegistrationService {
         return all;
     }
 
-    /**
-     * Save all entity lists to files:
-     * students.txt, teachers.txt, staff.txt, courses.txt
-     */
+    public List<Course> getCourses() { return courses; }
+
+    // --- Save All ---
     public void saveAllRegistrations() {
         try {
-            // ensure files exist
             fileStorage.ensureFile("students.txt");
             fileStorage.ensureFile("teachers.txt");
             fileStorage.ensureFile("staff.txt");
             fileStorage.ensureFile("courses.txt");
 
-            // convert to lines
-            List<String> studentLines = students.stream()
-                    .map(Storable::toDataString)
-                    .collect(Collectors.toList());
-            List<String> teacherLines = teachers.stream()
-                    .map(Storable::toDataString)
-                    .collect(Collectors.toList());
-            List<String> staffLines = staffMembers.stream()
-                    .map(Storable::toDataString)
-                    .collect(Collectors.toList());
-            List<String> courseLines = courses.stream()
-                    .map(Storable::toDataString)
-                    .collect(Collectors.toList());
+            fileStorage.saveLines("students.txt",
+                    students.stream().map(Storable::toDataString).collect(Collectors.toList()));
 
-            // save
-            fileStorage.saveLines("students.txt", studentLines);
-            fileStorage.saveLines("teachers.txt", teacherLines);
-            fileStorage.saveLines("staff.txt", staffLines);
-            fileStorage.saveLines("courses.txt", courseLines);
+            fileStorage.saveLines("teachers.txt",
+                    teachers.stream().map(Storable::toDataString).collect(Collectors.toList()));
 
-            System.out.println("All registrations saved.");
+            fileStorage.saveLines("staff.txt",
+                    staffMembers.stream().map(Storable::toDataString).collect(Collectors.toList()));
+
+            fileStorage.saveLines("courses.txt",
+                    courses.stream().map(Storable::toDataString).collect(Collectors.toList()));
+
         } catch (IOException e) {
             System.err.println("Error saving registrations: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 }
